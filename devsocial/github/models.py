@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring
 from dataclasses import dataclass, field
 from typing import List
-from devsocial.models.developer import BaseDeveloper
+from devsocial.models.base_developer import BaseDeveloper
 from devsocial.models.organization import Organization
 
 

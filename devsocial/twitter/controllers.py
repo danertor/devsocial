@@ -1,17 +1,20 @@
-# pylint: disable=too-few-public-methods, useless-super-delegation
-# pylint: disable:too-few-public-methods
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 """
 Behaviour for the Twitter module.
 """
-from devsocial.controllers.social_network import BaseDevSocialNet
 from .models import TwitterDeveloper
+from ..controllers import BaseSocialController
 
 
-class TwitterDevSocialNet(BaseDevSocialNet):
+# pylint: disable=too-few-public-methods, useless-super-delegation
+class TwitterConnectedController(BaseSocialController):
+    developer_type: type = TwitterDeveloper
+    developer_type_name: type = TwitterDeveloper.__name__
+
     def __init__(self):
         super().__init__()
 
-    def connected(self, developer1: TwitterDeveloper, developer2: TwitterDeveloper):
+    @staticmethod
+    def connected(developer1: TwitterDeveloper, developer2: TwitterDeveloper) -> bool:
         return developer1 in developer2.followers and developer2 in developer1.followers

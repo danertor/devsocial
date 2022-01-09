@@ -1,26 +1,28 @@
-# pylint: disable=missing-module-docstring, missing-function-docstring, unused-variable
+# pylint: disable=missing-module-docstring, disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=unused-variable, unused-argument
+
 import pytest
-from devsocial.models.developer import BaseDeveloper
+from devsocial.models.base_developer import BaseDeveloper
 
 
-def test_create_developer():
+def test_base_create_basedeveloper():
     dev: BaseDeveloper = BaseDeveloper('homer')
     assert dev
 
 
 # pylint: disable=no-value-for-parameter
-def test_fail_developer_with_no_handle():
+def test_base_fail_developer_with_no_handle():
     with pytest.raises(TypeError):
         empty_dev: BaseDeveloper = BaseDeveloper()
 
 
-def test_developers_equal():
+def test_base_developers_equal():
     dev1: BaseDeveloper = BaseDeveloper('homer')
     dev2: BaseDeveloper = BaseDeveloper('homer')
     assert dev1 == dev2
 
 
-def test_developers_not_equal():
+def test_base_basedevelopers_not_equal():
     dev1: BaseDeveloper = BaseDeveloper('homer')
     dev2: BaseDeveloper = BaseDeveloper('krusty')
     assert dev1 != dev2

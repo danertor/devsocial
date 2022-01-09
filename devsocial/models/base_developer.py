@@ -3,7 +3,6 @@
 # pylint: disable=missing-function-docstring
 from dataclasses import dataclass
 
-
 HandleType = str
 
 
