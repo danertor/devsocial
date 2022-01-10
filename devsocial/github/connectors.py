@@ -8,7 +8,7 @@ from typing import List
 from github import Github
 
 from devsocial import config
-from .models import GitHubDeveloper, Organization
+from .models import GitHubDeveloper, GitHubOrganization
 
 
 def create_api() -> Github:
@@ -25,10 +25,10 @@ class GitHubApiConnector:
     def get_user(self, handle: str) -> GitHubDeveloper:
         return GitHubDeveloper(handle, organizations=self.get_users_orgs(handle))
 
-    def get_users_orgs(self, handle: str) -> List[Organization]:
+    def get_users_orgs(self, handle: str) -> List[GitHubOrganization]:
         organizations = []
         user = self.external_api.get_user(handle)
         fetched_orgs = user.get_orgs()
         for org in fetched_orgs:
-            organizations.append(Organization(org.login))
+            organizations.append(GitHubOrganization(org.login))
         return organizations

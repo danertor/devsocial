@@ -2,21 +2,20 @@
 # pylint: disable=unused-variable, unused-argument
 
 from devsocial.controllers.social_network import DevSocialNet
-from devsocial.models.organization import Organization
 from devsocial.models.social_developer import SocialDeveloper
-from devsocial.github.models import GitHubDeveloper
+from devsocial.github.models import GitHubDeveloper, GitHubOrganization
 from devsocial.twitter.models import TwitterDeveloper
 
 
 def test_two_social_developers_are_connected():
     dev1_handle = 'homer'
     dev2_handle = 'lenny'
-    organization = Organization("Nuclear Plant")
+    organization = GitHubOrganization("Nuclear Plant")
 
-    twitter_dev1: TwitterDeveloper = TwitterDeveloper(dev1_handle)
-    twitter_dev2: TwitterDeveloper = TwitterDeveloper(dev2_handle)
-    twitter_dev1.followers.append(twitter_dev2)
-    twitter_dev2.followers.append(twitter_dev1)
+    twitter_dev1: TwitterDeveloper = TwitterDeveloper(dev1_handle, id='1')
+    twitter_dev2: TwitterDeveloper = TwitterDeveloper(dev2_handle, id='2')
+    twitter_dev1.followers.append(twitter_dev2.id)
+    twitter_dev2.followers.append(twitter_dev1.id)
 
     github_dev1: GitHubDeveloper = GitHubDeveloper(dev1_handle)
     github_dev2: GitHubDeveloper = GitHubDeveloper(dev2_handle)
@@ -38,12 +37,12 @@ def test_two_social_developers_are_connected():
 def test_two_social_developers_are_not_fully_connected():
     dev1_handle = 'homer'
     dev2_handle = 'flanders'
-    organization = Organization("Evergreen Terrace St.")
+    organization = GitHubOrganization("Evergreen Terrace St.")
 
-    twitter_dev1: TwitterDeveloper = TwitterDeveloper(dev1_handle)
-    twitter_dev2: TwitterDeveloper = TwitterDeveloper(dev2_handle)
+    twitter_dev1: TwitterDeveloper = TwitterDeveloper(dev1_handle, id='1')
+    twitter_dev2: TwitterDeveloper = TwitterDeveloper(dev2_handle, id='2')
 
-    twitter_dev1.followers.append(twitter_dev2)
+    twitter_dev1.followers.append(twitter_dev2.id)
 
     github_dev1: GitHubDeveloper = GitHubDeveloper(dev1_handle)
     github_dev2: GitHubDeveloper = GitHubDeveloper(dev2_handle)

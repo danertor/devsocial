@@ -1,12 +1,13 @@
 # pylint: disable=missing-module-docstring, disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=unused-variable, unused-argument
+# pylint: disable=unused-variable, unused-argument, no-self-use
 
 from unittest.mock import Mock
+import pytest
 import tweepy
 
-from devsocial.twitter.connectors import TwitterApiConnector
-from devsocial.twitter.controllers import TwitterConnectedController
 from devsocial.twitter.models import TwitterDeveloper
+from devsocial.twitter.controllers import TwitterConnectedController
+from devsocial.twitter.connectors import TwitterApiConnector, create_api
 
 
 def test_twitter_dev_has_followers():
@@ -21,18 +22,18 @@ def test_twitter_dev_has_no_followers():
 
 
 def test_two_developers_are_twitter_connected():
-    twitter_dev1: TwitterDeveloper = TwitterDeveloper('homer')
-    twitter_dev2: TwitterDeveloper = TwitterDeveloper('mrburns')
-    twitter_dev1.followers.append(twitter_dev2)
-    twitter_dev2.followers.append(twitter_dev1)
+    twitter_dev1: TwitterDeveloper = TwitterDeveloper('homer', id='1')
+    twitter_dev2: TwitterDeveloper = TwitterDeveloper('mrburns', id='2')
+    twitter_dev1.followers.append(twitter_dev2.id)
+    twitter_dev2.followers.append(twitter_dev1.id)
     twitter_net: TwitterConnectedController = TwitterConnectedController()
     assert twitter_net.connected(twitter_dev1, twitter_dev2)
 
 
 def test_two_developers_are_not_twitter_connected():
-    twitter_dev1: TwitterDeveloper = TwitterDeveloper('homer')
-    twitter_dev2: TwitterDeveloper = TwitterDeveloper('flanders')
-    twitter_dev2.followers.append(twitter_dev1)
+    twitter_dev1: TwitterDeveloper = TwitterDeveloper('homer', id='1')
+    twitter_dev2: TwitterDeveloper = TwitterDeveloper('flanders', id='2')
+    twitter_dev2.followers.append(twitter_dev1.id)
     twitter_net: TwitterConnectedController = TwitterConnectedController()
     assert not twitter_net.connected(twitter_dev1, twitter_dev2)
 
@@ -44,18 +45,55 @@ def test_check_same_developer_twitter_connected():
 
 
 class TestTwitterConnector:
-    handle = 'homer'
+    twitter_dev_handle = 'homer'
+    twitter_dev_id = '1'
     follower_handle = 'lenny'
+    follower_id = '2'
 
-    def mock_get_users_followers(self, _id: str, *args, **kwargs):
+    @pytest.fixture
+    def twitter_api(self) -> tweepy.API:
+        return tweepy.Client()
+
+    def mock_get_user(self, screen_name: str, *args, **kwargs):
         mock_follower_response = Mock()
-        mock_follower_response.id = self.follower_handle
-        return [mock_follower_response, ]
+        mock_follower_response.id_str = self.twitter_dev_id
+        return mock_follower_response
 
-    def test_get_developers_followers(self, monkeypatch):
-        twitter_follower = TwitterDeveloper(self.follower_handle)
-        twitter_api = tweepy.Client()
-        monkeypatch.setattr(twitter_api, "get_users_followers", self.mock_get_users_followers)
+    def mock_get_follower_ids(self, screen_name: str, *args, **kwargs):
+        return [self.follower_id, ]
+
+    def test_get_developers_followers(self, monkeypatch, twitter_api: tweepy.API):
+        monkeypatch.setattr(twitter_api, "get_follower_ids", self.mock_get_follower_ids, raising=False)
         twitter_connector = TwitterApiConnector(twitter_api)
-        twitter_dev_followers = twitter_connector.get_users_followers(self.handle)
-        assert twitter_dev_followers[0] == twitter_follower
+        twitter_dev_followers = twitter_connector.get_users_followers(self.twitter_dev_handle)
+        assert twitter_dev_followers[0] == self.follower_id
+
+    def test_get_user(self, monkeypatch, twitter_api: tweepy.API):
+        monkeypatch.setattr(twitter_api, "get_user", self.mock_get_user)
+        monkeypatch.setattr(twitter_api, "get_follower_ids", self.mock_get_follower_ids, raising=False)
+        twitter_connector = TwitterApiConnector(twitter_api)
+        twitter_dev = twitter_connector.get_user(self.twitter_dev_handle)
+        assert twitter_dev.handle == self.twitter_dev_handle
+        assert twitter_dev.id == self.twitter_dev_id
+
+
+@pytest.mark.skip(reason="Disable external api communication")
+class TestTwitterExternalApi:
+    twitter_dev_handle = 'ULLEstudiantes'
+    twitter_dev_id = '1479961174594793486'
+    follower_id = '917540588'
+
+    @pytest.fixture
+    def twitter_api(self) -> tweepy.API:
+        api = create_api()
+        return api
+
+    def test_get_developers_followers(self, twitter_api: tweepy.API):
+        twitter_connector = TwitterApiConnector(twitter_api)
+        twitter_dev_followers = twitter_connector.get_users_followers(self.twitter_dev_handle)
+        assert self.follower_id in twitter_dev_followers
+
+    def test_get_user(self, twitter_api: tweepy.API):
+        twitter_connector = TwitterApiConnector(twitter_api)
+        twitter_dev = twitter_connector.get_user(self.twitter_dev_handle)
+        assert twitter_dev.id == self.twitter_dev_id

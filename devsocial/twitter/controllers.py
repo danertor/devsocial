@@ -17,4 +17,4 @@ class TwitterConnectedController(BaseSocialController):
 
     @staticmethod
     def connected(developer1: TwitterDeveloper, developer2: TwitterDeveloper) -> bool:
-        return developer1 in developer2.followers and developer2 in developer1.followers
+        return developer1.id in developer2.followers and developer2.id in developer1.followers
