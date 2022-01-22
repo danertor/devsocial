@@ -6,11 +6,11 @@ from typing import List
 from devsocial.models.base_developer import BaseDeveloper
 
 
-TwitterDeveloperId = type(str)
+TwitterDeveloperIdType = type(str)
 
 
 @dataclass()
 class TwitterDeveloper(BaseDeveloper):
     # pylint: disable=invalid-name
-    id: TwitterDeveloperId = None
-    followers: List[TwitterDeveloperId] = field(default_factory=list)
+    id: TwitterDeveloperIdType = None
+    followers: List[TwitterDeveloperIdType] = field(default_factory=list)

@@ -20,5 +20,5 @@ class GitHubConnectedController(BaseSocialController):
     @staticmethod
     def connected(developer1: GitHubDeveloper, developer2: GitHubDeveloper) -> bool:
         if developer1 != developer2:
-            return bool(set(developer1.organizations) & set(developer2.organizations))
+            return bool(set(developer1.organisations) & set(developer2.organisations))
         return False

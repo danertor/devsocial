@@ -12,7 +12,7 @@ def test_create_social_developer():
     assert dev
 
 
-def test_social_developer_add_account():
+def test_add_account_to_social_developer():
     handle = 'homer'
     dev: SocialDeveloper = SocialDeveloper(handle)
 
@@ -23,7 +23,7 @@ def test_social_developer_add_account():
     assert len(dev.accounts) > 0
 
 
-def test_social_developer_fail_diff_handles():
+def test_add_account_with_different_handle_to_social_developer():
     handle1 = 'homer'
     handle_template = 'hsimpson{}'
     dev: SocialDeveloper = SocialDeveloper(handle1)

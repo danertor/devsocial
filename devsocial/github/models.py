@@ -6,13 +6,13 @@ from typing import List
 from devsocial.models.base_developer import BaseDeveloper
 
 
-# 'frozen' and 'eq' are set for GitHubOrganization class to be hash-able, thus be an item of a set.
-# It is risky to implement a __hash__ function for GitHubOrganization if a developer has many organizations (i.e. +1000)
+# 'frozen' and 'eq' are set for GitHubOrganisation class to be hash-able, thus be an item of a set.
+# It is risky to implement a __hash__ function for GitHubOrganisation if a developer has many organisations (i.e. +1000)
 @dataclass(frozen=True, eq=True)
-class GitHubOrganization:
+class GitHubOrganisation:
     name: str
 
 
 @dataclass()
 class GitHubDeveloper(BaseDeveloper):
-    organizations: List[GitHubOrganization] = field(default_factory=list)
+    organisations: List[GitHubOrganisation] = field(default_factory=list)

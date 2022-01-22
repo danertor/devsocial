@@ -11,7 +11,10 @@ from devsocial import config
 from .models import TwitterDeveloper
 
 
-def create_api() -> tweepy.API:
+TwitterApiType = type(tweepy.API)
+
+
+def create_api() -> TwitterApiType:
     auth = tweepy.OAuthHandler(config.TWITTER_API['CONSUMER_KEY'], config.TWITTER_API['CONSUMER_SECRET'])
     auth.set_access_token(config.TWITTER_API['ACCESS_TOKEN'], config.TWITTER_API['ACCESS_TOKEN_SECRET'])
     api = tweepy.API(auth)
@@ -21,8 +24,8 @@ def create_api() -> tweepy.API:
 class TwitterApiConnector:
     fields_to_retrieve = 'id'
 
-    def __init__(self, api: tweepy.API):
-        self.external_api = api
+    def __init__(self, api: TwitterApiType = None):
+        self.external_api = api if api else create_api()
         self.config = config.TWITTER_API
 
     def get_user(self, handle: str) -> TwitterDeveloper:

@@ -1,8 +1,10 @@
 """
-Behaviours of the different social network classes.
+Note: Please implement the base class methods listed below if you want to create you own social network controller.
 """
 # pylint: disable=missing-function-docstring
 from abc import abstractmethod
+from flask_sqlalchemy import SQLAlchemy
+
 from devsocial.models.base_developer import BaseDeveloper
 
 
