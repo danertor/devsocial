@@ -6,8 +6,10 @@ from typing import List
 from devsocial.dbmodels.dbhistory import DBDevConnHistoryRow
 from devsocial.github.models import GitHubOrganisation
 from devsocial.models.base_developer import HandleType
-from devsocial.models.social_network import DeveloperConnectionStatus, DeveloperConnectionStatusOk, \
-    DeveloperConnectionStatusFalse
+from devsocial.models.social_network import \
+    DeveloperConnectionStatus, \
+    DeveloperHistoryConnectionStatusOk, \
+    DeveloperHistoryConnectionStatusFalse
 
 
 class DBHistoryController:
@@ -26,11 +28,10 @@ class DBHistoryController:
 
     def get_dev_connections(self, handle1: HandleType, handle2: HandleType) -> List[DeveloperConnectionStatus]:
         results = []
-        for row in self.db.session.query(handle1, handle2):
+        for row in DBDevConnHistoryRow.query.filter_by(handle1=handle1, handle2=handle2).order_by(DBDevConnHistoryRow.registered_at).all():
             if row.connected:
                 organisations = [GitHubOrganisation(name) for name in json.loads(row.organisations)]
-                results.append(DeveloperConnectionStatusOk(row.registered_at, row.handle1, row.handle2, organisations))
+                results.append(DeveloperHistoryConnectionStatusOk(row.registered_at, organisations))
             else:
-                results.append(
-                    DeveloperConnectionStatusFalse(row.registered_at, row.handle1, row.handle2))
+                results.append(DeveloperHistoryConnectionStatusFalse(row.registered_at))
         return results

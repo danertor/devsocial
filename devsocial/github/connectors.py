@@ -5,11 +5,11 @@
 Our Interface for Twitter.
 """
 from typing import List
-from github import Github
+from github import Github, GithubException
 
 from devsocial import config
 from .models import GitHubDeveloper, GitHubOrganisation
-
+from ..exceptions import InvalidHandleError
 
 GitHubApiType = type(Github)
 
@@ -21,12 +21,17 @@ def create_api() -> GitHubApiType:
 class GitHubApiConnector:
     fields_to_retrieve = 'id'
 
-    def __init__(self, api: GitHubApiType):
-        self.external_api = api
+    def __init__(self, api: GitHubApiType = None):
+        self.external_api = api if api else create_api()
         self.config = config.GITHUB_API
 
     def get_user(self, handle: str) -> GitHubDeveloper:
-        return GitHubDeveloper(handle, organisations=self.get_users_orgs(handle))
+        try:
+            return GitHubDeveloper(handle, organisations=self.get_users_orgs(handle))
+        except GithubException.UnknownObjectException as _:
+            raise InvalidHandleError(f"{handle} is no a valid user in github")
+        except Exception as _:
+            raise InvalidHandleError(f"Can not get data from github for {handle}")
 
     def get_users_orgs(self, handle: str) -> List[GitHubOrganisation]:
         organisations = []

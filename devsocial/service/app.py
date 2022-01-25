@@ -3,12 +3,10 @@
 """
 Location of initialization of service singleton objects.
 """
-from flask_migrate import Migrate
+import logging
 
-from . import create_app, create_db_conn
+from . import create_app
 
 
 app = create_app()
-
-db = create_db_conn(app)
-migrate = Migrate(app, db)
+app.logger.setLevel(logging.ERROR)

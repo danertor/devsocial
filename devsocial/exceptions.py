@@ -1,0 +1,2 @@
+class InvalidHandleError(Exception):
+    pass

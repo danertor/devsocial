@@ -65,7 +65,7 @@ class TestGitHubConnector:
         mock_user.get_orgs = self.mock_get_orgs
         return mock_user
 
-    def test_get_user(self, monkeypatch, github_api):
+    def test_get_user(self, monkeypatch, github_api: GitHubApiType):
         monkeypatch.setattr(github_api, "get_user", self.mock_get_user)
         github_connector = GitHubApiConnector(github_api)
         github_dev = github_connector.get_user(self.handle)

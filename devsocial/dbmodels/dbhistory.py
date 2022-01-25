@@ -3,7 +3,7 @@
 import json
 
 from devsocial.models.social_network import DeveloperConnectionStatus, DeveloperConnectionStatusOk
-from devsocial.service.app import db
+from devsocial.dbmodels import db
 
 
 # basic model

@@ -3,6 +3,9 @@
 from collections import defaultdict
 from unittest.mock import Mock
 from typing import List
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import pytest
 
 from devsocial.controllers.dbhistory import DBHistoryController
@@ -12,11 +15,17 @@ from devsocial.controllers.social_network import DevSocialNet
 from devsocial.github.models import GitHubDeveloper, GitHubOrganisation
 from devsocial.github.connectors import GitHubApiType
 from devsocial.github.connectors import create_api as create_github_api
-from devsocial.models.social_network import DeveloperConnectionStatusOk, DeveloperConnectionStatus, \
-    DeveloperConnectionStatusFalse
+from devsocial.models.social_network import \
+    DeveloperConnectionStatusOk, \
+    DeveloperConnectionStatus, \
+    DeveloperConnectionStatusFalse, \
+    DeveloperHistoryConnectionStatusFalse, \
+    DeveloperHistoryConnectionStatusOk
 from devsocial.twitter.connectors import TwitterApiType
 from devsocial.twitter.connectors import create_api as create_twitter_api
 from devsocial.twitter.models import TwitterDeveloper, TwitterDeveloperIdType
+from devsocial.service.app import create_app
+from devsocial.dbmodels import db
 
 
 def test_two_social_developers_are_connected():
@@ -118,7 +127,7 @@ class TestTwoHandlesAreConnected:
         mock_user.get_orgs = self.mock_github_get_orgs
         return mock_user
 
-    def test_two_handles_are_connected(self, twitter_api, github_api):
+    def test_two_handles_are_connected(self, twitter_api: TwitterApiType, github_api: GitHubApiType):
         social_net: DevSocialNet = DevSocialNet(twitter_api, github_api)
         result: DeveloperConnectionStatus = social_net.handles_connected(self.dev1_handle, self.dev2_handle)
         expected: DeveloperConnectionStatusOk = DeveloperConnectionStatusOk(result.registered_at,
@@ -128,7 +137,7 @@ class TestTwoHandlesAreConnected:
         assert result == expected
 
 
-class TestTwitterConnector:
+class TestDBHistoryController:
     registered_at = "2022-01-25T17:55:10Z"
     dev1_handle = 'homer'
     dev2_handle = 'lenny'
@@ -139,9 +148,12 @@ class TestTwitterConnector:
                                                        dev1_handle,
                                                        dev2_handle,
                                                        organisations=organisations)
+    dev_history_conn_status_first = DeveloperHistoryConnectionStatusFalse(registered_at)
+    dev_history_conn_status_last = DeveloperHistoryConnectionStatusOk(registered_at, organisations=organisations)
+
     @staticmethod
     @pytest.fixture
-    def local_db() -> Mock:
+    def mock_db() -> Mock:
         class MockDBSession:
             def __init__(self):
                 self.history = defaultdict(list)
@@ -159,11 +171,26 @@ class TestTwitterConnector:
         local_db.session = session
         return local_db
 
-    def test_save_connection_history_in_db(self, local_db: Mock):
-        db_history_controller = DBHistoryController(local_db)
-        db_history_controller.save_dev_connection(self.dev_conn_status_first)
-        db_history_controller.save_dev_connection(self.dev_conn_status_last)
 
-        db_results = db_history_controller.get_dev_connections(self.dev1_handle, self.dev2_handle)
-        assert db_results[0] == self.dev_conn_status_first
-        assert db_results[1] == self.dev_conn_status_last
+    @staticmethod
+    @pytest.fixture
+    def app() -> Flask:
+        return create_app()
+
+    @staticmethod
+    @pytest.fixture
+    def local_db(app: Flask) -> Mock:
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://"
+        db.init_app(app)
+        return db
+
+    def test_save_connection_history_in_db(self, local_db: SQLAlchemy, app: Flask):
+        with app.app_context():
+            db_history_controller = DBHistoryController(local_db)
+            local_db.create_all()
+            db_history_controller.save_dev_connection(self.dev_conn_status_first)
+            db_history_controller.save_dev_connection(self.dev_conn_status_last)
+            db_results = db_history_controller.get_dev_connections(self.dev1_handle, self.dev2_handle)
+
+        assert db_results[0] == self.dev_history_conn_status_first
+        assert db_results[1] == self.dev_history_conn_status_last

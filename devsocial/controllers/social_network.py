@@ -5,20 +5,22 @@ It integrates all of the parts of the applications.
 # pylint: disable:too-few-public-methods
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
-from typing import List
+from typing import List, Union
 from datetime import datetime
 
 from devsocial import config
+from devsocial.exceptions import InvalidHandleError
 from devsocial.models.base_developer import HandleType
 from devsocial.models.social_developer import SocialDeveloper
 from devsocial.models.social_network import (
     DeveloperConnectionStatus,
     DeveloperConnectionStatusOk,
-    DeveloperConnectionStatusFalse
+    DeveloperConnectionStatusFalse, DeveloperConnectionStatusError, DeveloperConnectionStatusNotFound
 )
 from devsocial.twitter.connectors import TwitterApiConnector, TwitterApiType
 from devsocial.github.models import GitHubDeveloper, GitHubOrganisation
 from devsocial.github.connectors import GitHubApiConnector, GitHubApiType
+from devsocial.twitter.models import TwitterDeveloper
 
 
 class DevSocialNet:
@@ -40,21 +42,35 @@ class DevSocialNet:
             social_connections.append(social_controller.connected(developer1_account, developer2_account))
         return all(social_connections)
 
-    def handles_connected(self, handle1: HandleType, handle2: HandleType) -> DeveloperConnectionStatus:
-        twitter_dev1 = self._twitter_connector.get_user(handle1)
-        twitter_dev2 = self._twitter_connector.get_user(handle2)
-        github_dev1 = self._github_connector.get_user(handle1)
-        github_dev2 = self._github_connector.get_user(handle2)
+    def handles_connected(self, handle1: HandleType, handle2: HandleType) \
+            -> Union[DeveloperConnectionStatusOk, DeveloperConnectionStatusError]:
+        errors: list = []
+        twitter_devs: List[TwitterDeveloper] = []
+        github_devs: List[GitHubDeveloper] = []
+        try:
+            for twitter_handle in (handle1, handle2):
+                twitter_devs.append(self._twitter_connector.get_user(twitter_handle))
+        except InvalidHandleError as e:
+            errors.append(str(e))
+
+        try:
+            for github_handle in (handle1, handle2):
+                github_devs.append(self._github_connector.get_user(github_handle))
+        except InvalidHandleError as e:
+            errors.append(str(e))
+        if errors:
+            return DeveloperConnectionStatusError(errors)
+
         social_dev1 = SocialDeveloper(handle1)
-        social_dev1.add_account(twitter_dev1)
-        social_dev1.add_account(github_dev1)
+        social_dev1.add_account(twitter_devs[0])
+        social_dev1.add_account(github_devs[0])
         social_dev2 = SocialDeveloper(handle2)
-        social_dev2.add_account(twitter_dev2)
-        social_dev2.add_account(github_dev2)
+        social_dev2.add_account(twitter_devs[1])
+        social_dev2.add_account(github_devs[1])
         connected_status = self.developers_connected(social_dev1, social_dev2)
         registered_at = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         if connected_status:
-            common_orgs = self.get_common_github_orgs(github_dev1, github_dev2)
+            common_orgs = self.get_common_github_orgs(github_devs[0], github_devs[1])
             return DeveloperConnectionStatusOk(registered_at, handle1, handle2, organisations=common_orgs)
         return DeveloperConnectionStatusFalse(registered_at, handle1, handle2)
 
