@@ -47,17 +47,18 @@ class DevSocialNet:
         errors: list = []
         twitter_devs: List[TwitterDeveloper] = []
         github_devs: List[GitHubDeveloper] = []
-        try:
-            for twitter_handle in (handle1, handle2):
+        for twitter_handle in (handle1, handle2):
+            try:
                 twitter_devs.append(self._twitter_connector.get_user(twitter_handle))
-        except InvalidHandleError as e:
-            errors.append(str(e))
+            except InvalidHandleError as e:
+                errors.append(str(e))
 
-        try:
-            for github_handle in (handle1, handle2):
+        for github_handle in (handle1, handle2):
+            try:
                 github_devs.append(self._github_connector.get_user(github_handle))
-        except InvalidHandleError as e:
-            errors.append(str(e))
+            except InvalidHandleError as e:
+                errors.append(str(e))
+
         if errors:
             return DeveloperConnectionStatusError(errors)
 

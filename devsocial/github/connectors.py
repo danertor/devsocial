@@ -4,8 +4,9 @@
 """
 Our Interface for Twitter.
 """
+import traceback
 from typing import List
-from github import Github, GithubException
+from github import Github, UnknownObjectException
 
 from devsocial import config
 from .models import GitHubDeveloper, GitHubOrganisation
@@ -28,9 +29,10 @@ class GitHubApiConnector:
     def get_user(self, handle: str) -> GitHubDeveloper:
         try:
             return GitHubDeveloper(handle, organisations=self.get_users_orgs(handle))
-        except GithubException.UnknownObjectException as _:
+        except UnknownObjectException as _:
             raise InvalidHandleError(f"{handle} is no a valid user in github")
         except Exception as _:
+            traceback.print_exc()
             raise InvalidHandleError(f"Can not get data from github for {handle}")
 
     def get_users_orgs(self, handle: str) -> List[GitHubOrganisation]:
@@ -38,5 +40,5 @@ class GitHubApiConnector:
         user = self.external_api.get_user(handle)
         fetched_orgs = user.get_orgs()
         for org in fetched_orgs:
-            organisations.append(GitHubOrganisation(org.login))
+            organisations.append(GitHubOrganisation(org.login if org.login else org.name))
         return organisations

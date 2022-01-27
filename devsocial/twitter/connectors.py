@@ -4,6 +4,7 @@
 """
 Our Interface for Twitter.
 """
+import traceback
 from typing import List
 import tweepy
 
@@ -34,7 +35,8 @@ class TwitterApiConnector:
             return TwitterDeveloper(handle, id=twitter_dev_id, followers=self.get_users_followers(handle))
         except tweepy.errors.NotFound as _:
             raise InvalidHandleError(f"{handle} is no a valid user in twitter")
-        except Exception as _:
+        except tweepy.TweepyException as _:
+            traceback.print_exc()
             raise InvalidHandleError(f"Can not get data from twitter for {handle}")
 
     def get_users_followers(self, handle: str) -> List[TwitterDeveloper]:

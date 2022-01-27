@@ -41,7 +41,7 @@ class DeveloperConnectionStatusError:
     errors: List[str]
 
     def asdict(self) -> Dict[str, List[str]]:
-        return {'errors': self.errors}
+        return {'errors': sorted(self.errors)}
 
 
 @dataclass
@@ -49,7 +49,7 @@ class DeveloperConnectionStatusNotFound:
     errors: List[str]
 
     def asdict(self) -> Dict[str, List[str]]:
-        return {'errors': self.errors}
+        return {'errors': sorted(self.errors)}
 
 
 @dataclass
