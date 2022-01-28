@@ -53,6 +53,16 @@ class DeveloperConnectionStatusNotFound:
 
 
 @dataclass
+class DeveloperConnectionStatusSameHandleError:
+    handle: str
+
+    def asdict(self) -> Dict[str, List[str]]:
+        return {'errors': [f"'handle1' and 'handle2' have the same value", ]}
+
+
+
+
+@dataclass
 class DeveloperConnectionStatusFalse(DeveloperConnectionStatus):
     connected = False
 
@@ -63,9 +73,9 @@ class DeveloperConnectionStatusFalse(DeveloperConnectionStatus):
 # Connection History data models
 @dataclass
 class DeveloperHistoryConnectionStatus:
-    registered_at: str  # datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    registered_at: str  # "%Y-%m-%dT%H:%M:%SZ"
 
-    def asdict(self) -> Dict[str, str]:
+    def asdict(self) -> Dict[str, Union[bool, List[str]]]:
         return asdict(self)
 
 
@@ -75,15 +85,17 @@ class DeveloperHistoryConnectionStatusOk(DeveloperHistoryConnectionStatus):
     organisations: List[GitHubOrganisation]
 
     def asdict(self) -> Dict[str, Union[bool, List[str]]]:
-        organisations = [org.name for org in self.organisations]
-        return {'connected': self.connected, 'organisations': organisations}
+        rep_dict = super().asdict()
+        rep_dict['organisations'] = [org.name for org in self.organisations]
+        rep_dict['connected'] = self.connected
+        return rep_dict
 
 
 @dataclass
 class DeveloperHistoryConnectionStatusFalse(DeveloperHistoryConnectionStatus):
     connected = False
 
-    def asdict(self) -> dict:
+    def asdict(self) -> Dict[str, Union[bool, List[str]]]:
         rep_dict = super().asdict()
         rep_dict['connected'] = self.connected
         return rep_dict

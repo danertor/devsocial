@@ -8,7 +8,7 @@ from devsocial.controllers.dbhistory import DBHistoryController
 from devsocial.models.base_developer import HandleType
 from devsocial.controllers.social_network import DevSocialNet
 from devsocial.models.social_network import DeveloperConnectionStatus, DeveloperConnectionStatusOk, \
-    DeveloperConnectionStatusFalse, DeveloperConnectionStatusError
+    DeveloperConnectionStatusFalse, DeveloperConnectionStatusNotFound, DeveloperConnectionStatusSameHandleError
 
 social_net: DevSocialNet = DevSocialNet()
 db_history_controller = DBHistoryController(db)
@@ -18,7 +18,10 @@ def realtime(handle1: HandleType, handle2: HandleType) -> Response:
     result: DeveloperConnectionStatus = social_net.handles_connected(handle1, handle2)
     response = jsonify(result.asdict())
 
-    if isinstance(result, DeveloperConnectionStatusError):
+    if isinstance(result, DeveloperConnectionStatusSameHandleError):
+        return make_response(response, 400)
+
+    if isinstance(result, DeveloperConnectionStatusNotFound):
         return make_response(response, 404)
 
     if isinstance(result, DeveloperConnectionStatusOk) or isinstance(result, DeveloperConnectionStatusFalse):

@@ -60,7 +60,7 @@ def test_dev_history_conn_status_ok_asdict():
     organisation_names = ("Nuclear Plant", "Moe's Tavern")
     organisations = [GitHubOrganisation(name) for name in organisation_names]
     dev_conn_status_ok = DeveloperHistoryConnectionStatusOk(registered_at, organisations=organisations)
-    expected = {'connected': True, 'organisations': list(organisation_names)}
+    expected = {'connected': True, 'organisations': list(organisation_names), 'registered_at': registered_at}
     assert dev_conn_status_ok.asdict() == expected
 
 

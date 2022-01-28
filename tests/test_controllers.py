@@ -20,7 +20,8 @@ from devsocial.models.social_network import \
     DeveloperConnectionStatus, \
     DeveloperConnectionStatusFalse, \
     DeveloperHistoryConnectionStatusFalse, \
-    DeveloperHistoryConnectionStatusOk
+    DeveloperHistoryConnectionStatusOk, \
+    DeveloperConnectionStatusSameHandleError
 from devsocial.twitter.connectors import TwitterApiType
 from devsocial.twitter.connectors import create_api as create_twitter_api
 from devsocial.twitter.models import TwitterDeveloper, TwitterDeveloperIdType
@@ -80,6 +81,13 @@ def test_two_social_developers_are_not_fully_connected():
 
     social_net: DevSocialNet = DevSocialNet()
     assert not social_net.developers_connected(dev1, dev2)
+
+
+def test_error_response_handles_connected_same_handle():
+    same_handle = 'sideshow_bob'
+    social_net: DevSocialNet = DevSocialNet()
+    response = social_net.handles_connected(same_handle, same_handle)
+    assert isinstance(response, DeveloperConnectionStatusSameHandleError)
 
 
 class TestTwoHandlesAreConnected:

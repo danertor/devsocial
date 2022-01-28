@@ -13,14 +13,18 @@ from devsocial.exceptions import InvalidHandleError
 from devsocial.models.base_developer import HandleType
 from devsocial.models.social_developer import SocialDeveloper
 from devsocial.models.social_network import (
-    DeveloperConnectionStatus,
     DeveloperConnectionStatusOk,
-    DeveloperConnectionStatusFalse, DeveloperConnectionStatusError, DeveloperConnectionStatusNotFound
+    DeveloperConnectionStatusFalse,
+    DeveloperConnectionStatusNotFound,
+    DeveloperConnectionStatusSameHandleError
 )
 from devsocial.twitter.connectors import TwitterApiConnector, TwitterApiType
 from devsocial.github.models import GitHubDeveloper, GitHubOrganisation
 from devsocial.github.connectors import GitHubApiConnector, GitHubApiType
 from devsocial.twitter.models import TwitterDeveloper
+
+
+HandlesConnectedStatusTypes = Union[DeveloperConnectionStatusSameHandleError, DeveloperConnectionStatusNotFound, DeveloperConnectionStatusOk, DeveloperConnectionStatusFalse]
 
 
 class DevSocialNet:
@@ -42,8 +46,10 @@ class DevSocialNet:
             social_connections.append(social_controller.connected(developer1_account, developer2_account))
         return all(social_connections)
 
-    def handles_connected(self, handle1: HandleType, handle2: HandleType) \
-            -> Union[DeveloperConnectionStatusOk, DeveloperConnectionStatusError]:
+    def handles_connected(self, handle1: HandleType, handle2: HandleType) -> HandlesConnectedStatusTypes:
+        if handle1 == handle2:
+            return DeveloperConnectionStatusSameHandleError(handle1)
+
         errors: list = []
         twitter_devs: List[TwitterDeveloper] = []
         github_devs: List[GitHubDeveloper] = []
@@ -60,14 +66,16 @@ class DevSocialNet:
                 errors.append(str(e))
 
         if errors:
-            return DeveloperConnectionStatusError(errors)
+            return DeveloperConnectionStatusNotFound(errors)
 
         social_dev1 = SocialDeveloper(handle1)
         social_dev1.add_account(twitter_devs[0])
         social_dev1.add_account(github_devs[0])
+
         social_dev2 = SocialDeveloper(handle2)
         social_dev2.add_account(twitter_devs[1])
         social_dev2.add_account(github_devs[1])
+
         connected_status = self.developers_connected(social_dev1, social_dev2)
         registered_at = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         if connected_status:
