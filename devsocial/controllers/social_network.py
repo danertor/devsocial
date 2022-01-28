@@ -24,7 +24,11 @@ from devsocial.github.connectors import GitHubApiConnector, GitHubApiType
 from devsocial.twitter.models import TwitterDeveloper
 
 
-HandlesConnectedStatusTypes = Union[DeveloperConnectionStatusSameHandleError, DeveloperConnectionStatusNotFound, DeveloperConnectionStatusOk, DeveloperConnectionStatusFalse]
+HandlesConnectedStatusTypes = Union[DeveloperConnectionStatusSameHandleError,
+                                    DeveloperConnectionStatusNotFound,
+                                    DeveloperConnectionStatusOk,
+                                    DeveloperConnectionStatusFalse
+                                    ]
 
 
 class DevSocialNet:
@@ -56,14 +60,14 @@ class DevSocialNet:
         for twitter_handle in (handle1, handle2):
             try:
                 twitter_devs.append(self._twitter_connector.get_user(twitter_handle))
-            except InvalidHandleError as e:
-                errors.append(str(e))
+            except InvalidHandleError as handle_error:
+                errors.append(str(handle_error))
 
         for github_handle in (handle1, handle2):
             try:
                 github_devs.append(self._github_connector.get_user(github_handle))
-            except InvalidHandleError as e:
-                errors.append(str(e))
+            except InvalidHandleError as handle_error:
+                errors.append(str(handle_error))
 
         if errors:
             return DeveloperConnectionStatusNotFound(errors)

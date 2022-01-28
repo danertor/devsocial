@@ -1,6 +1,9 @@
+"""
+Entrypoint for running the devsocial restfull api service.
+Singletons are imported in this module.
+"""
 from devsocial.service.app import app
 from devsocial.dbmodels import db, migrate
-from devsocial.service import routes
 from devsocial.service.v1.routes import dev_social_api
 
 

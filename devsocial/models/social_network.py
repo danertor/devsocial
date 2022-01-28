@@ -1,6 +1,5 @@
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-class-docstring
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring, missing-class-docstring, missing-function-docstring
+# pylint: disable=no-self-use
 from dataclasses import dataclass, asdict
 from typing import List, Dict, Union
 
@@ -57,17 +56,7 @@ class DeveloperConnectionStatusSameHandleError:
     handle: str
 
     def asdict(self) -> Dict[str, List[str]]:
-        return {'errors': [f"'handle1' and 'handle2' have the same value", ]}
-
-
-
-
-@dataclass
-class DeveloperConnectionStatusFalse(DeveloperConnectionStatus):
-    connected = False
-
-    def asdict(self) -> Dict[str, bool]:
-        return {'connected': self.connected}
+        return {'errors': ["'handle1' and 'handle2' have the same value", ]}
 
 
 # Connection History data models

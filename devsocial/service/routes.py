@@ -1,10 +1,11 @@
+# pylint: disable=missing-function-docstring
 """
 Links to all routes of different versions for backward compatibility
 """
 from typing import Dict
 
-from .app import app
 from devsocial.dbmodels import db
+from .app import app
 
 
 @app.before_first_request

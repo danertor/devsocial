@@ -5,16 +5,10 @@ from unittest.mock import Mock
 from typing import List
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 import pytest
 
-from devsocial.controllers.dbhistory import DBHistoryController
 from devsocial.models.base_developer import HandleType
 from devsocial.models.social_developer import SocialDeveloper
-from devsocial.controllers.social_network import DevSocialNet
-from devsocial.github.models import GitHubDeveloper, GitHubOrganisation
-from devsocial.github.connectors import GitHubApiType
-from devsocial.github.connectors import create_api as create_github_api
 from devsocial.models.social_network import \
     DeveloperConnectionStatusOk, \
     DeveloperConnectionStatus, \
@@ -22,6 +16,11 @@ from devsocial.models.social_network import \
     DeveloperHistoryConnectionStatusFalse, \
     DeveloperHistoryConnectionStatusOk, \
     DeveloperConnectionStatusSameHandleError
+from devsocial.controllers.dbhistory import DBHistoryController
+from devsocial.controllers.social_network import DevSocialNet
+from devsocial.github.models import GitHubDeveloper, GitHubOrganisation
+from devsocial.github.connectors import GitHubApiType
+from devsocial.github.connectors import create_api as create_github_api
 from devsocial.twitter.connectors import TwitterApiType
 from devsocial.twitter.connectors import create_api as create_twitter_api
 from devsocial.twitter.models import TwitterDeveloper, TwitterDeveloperIdType

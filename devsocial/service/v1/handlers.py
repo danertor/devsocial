@@ -1,5 +1,6 @@
-import json
-from typing import List, Dict, Tuple
+# pylint: disable=missing-class-docstring, missing-function-docstring, disable=missing-module-docstring
+
+from typing import List
 
 from flask import Response, make_response, jsonify
 
@@ -24,7 +25,7 @@ def realtime(handle1: HandleType, handle2: HandleType) -> Response:
     if isinstance(result, DeveloperConnectionStatusNotFound):
         return make_response(response, 404)
 
-    if isinstance(result, DeveloperConnectionStatusOk) or isinstance(result, DeveloperConnectionStatusFalse):
+    if isinstance(result, (DeveloperConnectionStatusOk, DeveloperConnectionStatusFalse)):
         db_history_controller.save_dev_connection(result)
         return make_response(response, 200)
 

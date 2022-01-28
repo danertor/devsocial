@@ -4,7 +4,7 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Union
 
-from social_network import \
+from .social_network import \
     DeveloperHistoryConnectionStatusOk, \
     DeveloperHistoryConnectionStatusFalse, \
     DeveloperConnectionStatusFalse, \

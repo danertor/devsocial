@@ -1,3 +1,5 @@
+# pylint: disable=missing-class-docstring, missing-function-docstring, disable=missing-module-docstring
+# pylint: disable=no-self-use
 from flask import Response, Blueprint
 from flask_restx import Api, Namespace, Resource
 

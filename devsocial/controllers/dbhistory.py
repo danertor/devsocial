@@ -12,6 +12,7 @@ from devsocial.models.social_network import \
     DeveloperHistoryConnectionStatusFalse
 
 
+# pylint: disable=no-self-use
 class DBHistoryController:
     """
     For saving or retrieving historical records of developer connections.
@@ -28,7 +29,10 @@ class DBHistoryController:
 
     def get_dev_connections(self, handle1: HandleType, handle2: HandleType) -> List[DeveloperConnectionStatus]:
         results = []
-        for row in DBDevConnHistoryRow.query.filter_by(handle1=handle1, handle2=handle2).order_by(DBDevConnHistoryRow.registered_at).all():
+        for row in DBDevConnHistoryRow.query\
+                .filter_by(handle1=handle1, handle2=handle2)\
+                .order_by(DBDevConnHistoryRow.registered_at)\
+                .all():
             if row.connected:
                 organisations = [GitHubOrganisation(name) for name in json.loads(row.organisations)]
                 results.append(DeveloperHistoryConnectionStatusOk(row.registered_at, organisations))
