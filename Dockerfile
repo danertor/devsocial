@@ -42,4 +42,4 @@ USER devsocial
 WORKDIR  /home/devsocial
 
 # run server
-CMD ["python3", "runserver.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "runserver:app"]
