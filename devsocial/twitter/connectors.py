@@ -4,6 +4,7 @@
 """
 Our Interface for Twitter.
 """
+import logging
 import traceback
 from typing import List
 import tweepy
@@ -11,6 +12,10 @@ import tweepy
 from devsocial import config
 from .models import TwitterDeveloper
 from ..exceptions import InvalidHandleError
+
+
+logger = logging.getLogger()
+
 
 TwitterApiType = type(tweepy.API)
 
@@ -36,7 +41,7 @@ class TwitterApiConnector:
         except tweepy.errors.NotFound as _:
             raise InvalidHandleError(f"{handle} is no a valid user in twitter")
         except tweepy.TweepyException as _:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             raise InvalidHandleError(f"Can not get data from twitter for {handle}")
 
     def get_users_followers(self, handle: str) -> List[TwitterDeveloper]:

@@ -4,6 +4,7 @@
 """
 Our Interface for Twitter.
 """
+import logging
 import traceback
 from typing import List
 from github import Github, UnknownObjectException
@@ -11,6 +12,10 @@ from github import Github, UnknownObjectException
 from devsocial import config
 from .models import GitHubDeveloper, GitHubOrganisation
 from ..exceptions import InvalidHandleError
+
+
+logger = logging.getLogger()
+
 
 GitHubApiType = type(Github)
 
@@ -32,7 +37,7 @@ class GitHubApiConnector:
         except UnknownObjectException as _:
             raise InvalidHandleError(f"{handle} is no a valid user in github")
         except Exception as _:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             raise InvalidHandleError(f"Can not get data from github for {handle}")
 
     def get_users_orgs(self, handle: str) -> List[GitHubOrganisation]:

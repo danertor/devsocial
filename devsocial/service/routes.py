@@ -2,10 +2,14 @@
 """
 Links to all routes of different versions for backward compatibility
 """
+import logging
 from typing import Dict
 
 from devsocial.dbmodels import db
 from .app import app
+
+
+logger = logging.getLogger()
 
 
 @app.before_first_request
