@@ -12,7 +12,7 @@ from devsocial.service.v1.routes import dev_social_api
 app.config['DATABASE'] = {}
 app.config['DATABASE']['DBNAME'] = 'devsocial_db'
 app.config['DATABASE']['PORT'] = 5432
-app.config['DATABASE']['HOST'] = 'localhost'
+app.config['DATABASE']['HOST'] = 'devsocialdb'
 app.config['DATABASE']['USERNAME'] = 'devsocial'
 app.config['DATABASE']['PASSWORD'] = 'devsocial'
 
@@ -26,7 +26,6 @@ app.config["Development"] = True
 app.config["LOG_LEVEL"] = "DEBUG"
 db.init_app(app)
 migrate.init_app(app, db)
-# db.create_all()
 app.register_blueprint(dev_social_api, url_prefix='/')
 
-app.run(host='localhost', port='8080')
+app.run(host='0.0.0.0', port='8080')

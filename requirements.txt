@@ -1,0 +1,12 @@
+Flask==2.0.2
+Flask-Migrate==3.1.0
+flask-restx==0.5.1
+Flask-SQLAlchemy==2.5.1
+psycopg2==2.9.3
+PyGithub==1.55
+pylint==2.12.2
+pylint-flask==0.6
+pylint-flask-sqlalchemy==0.2.0
+pylint-plugin-utils==0.7
+SQLAlchemy==1.4.31
+tweepy==4.4.0
