@@ -38,7 +38,7 @@ class RealtimeEndpointController(Resource):
 
 
 @register_namespace.route('/connected/register/<handle1>/<handle2>', methods=['GET'])
-@realtime_namespace.route(f"/{__API_version__}/connected/register/<handle1>/<handle2>", methods=['GET'])
+@register_namespace.route(f"/{__API_version__}/connected/register/<handle1>/<handle2>", methods=['GET'])
 class RegisterEndpointController(Resource):
 
     def get(self, handle1: HandleType, handle2: HandleType) -> Response:
