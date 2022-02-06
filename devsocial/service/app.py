@@ -4,12 +4,13 @@
 Location of initialization of service singleton objects.
 """
 import logging
-from flask.logging import default_handler
+from flask.logging import default_handler, create_logger
 
 from . import create_app
 
 
 app = create_app()
+app.logger = create_logger(app)
 app.logger.setLevel(logging.ERROR)
 
 logger = logging.getLogger()
