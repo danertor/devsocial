@@ -1,13 +1,14 @@
 # pylint: disable=missing-module-docstring, disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=unused-variable, unused-argument, no-self-use
-
 from unittest.mock import Mock
+import pytest
 
 from devsocial.twitter.connectors import TwitterApiConnector, create_api, TwitterApiType
 
 
-def mock_get_user(screen_name: str, *args, **kwargs) -> Mock:
-    twitter_dev_id = kwargs.pop('twitter_dev_id')
+@pytest.fixture
+def mock_get_user(request) -> Mock:
+    twitter_dev_id = request.param
     mock_follower_response = Mock()
     mock_follower_response.id_str = twitter_dev_id
     return mock_follower_response

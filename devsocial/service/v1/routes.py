@@ -4,8 +4,8 @@ import logging
 from flask import Response, Blueprint
 from flask_restx import Api, Namespace, Resource
 
-from . import __version__, __API_version__
 from devsocial.models.base_developer import HandleType
+from . import __version__, __API_version__
 from .handlers import realtime, register
 
 
@@ -32,6 +32,8 @@ class RealtimeEndpointController(Resource):
 
     def get(self, handle1: HandleType, handle2: HandleType) -> Response:
         response = realtime(handle1, handle2)
+        if 500 <= response.status_code <= 599:
+            logger.error("Error processing request at realtime endpoint. Response:\n %s", str(response))
         return response
 
 
@@ -41,6 +43,8 @@ class RegisterEndpointController(Resource):
 
     def get(self, handle1: HandleType, handle2: HandleType) -> Response:
         response = register(handle1, handle2)
+        if 500 <= response.status_code <= 599:
+            logger.error("Error processing request at realtime endpoint. Response:\n %s", str(response))
         return response
 
 

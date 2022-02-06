@@ -1,6 +1,5 @@
 # pylint: disable=missing-module-docstring, disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=unused-variable, unused-argument, no-self-use
-
 from unittest.mock import Mock
 from typing import List
 import pytest
@@ -56,12 +55,12 @@ class TestTwitterConnector:
         api = create_api()
         return api
 
-    def mock_get_user(self, screen_name: str, *args, **kwargs) -> Mock:
+    def mock_get_user(self, screen_name: str, *ignored_arg, **ignored_kwargs) -> Mock:
         mock_follower_response = Mock()
         mock_follower_response.id_str = self.twitter_dev_id
         return mock_follower_response
 
-    def mock_get_follower_ids(self, screen_name: str, *args, **kwargs) -> List[TwitterDeveloperIdType]:
+    def mock_get_follower_ids(self, screen_name: str, *ignored_arg, **ignored_kwargs) -> List[TwitterDeveloperIdType]:
         return [self.follower_id, ]
 
     def test_get_developers_followers(self, monkeypatch, twitter_api: TwitterApiType):

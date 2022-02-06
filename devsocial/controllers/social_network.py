@@ -35,8 +35,8 @@ class DevSocialNet:
     def __init__(self, twitter_api: TwitterApiType = None, github_api: GitHubApiType = None):
         super().__init__()
         self._social_controllers: list = [controller() for controller in config.FULLY_CONNECTED_CONTROLLERS]
-        self._twitter_connector = TwitterApiConnector(twitter_api)
-        self._github_connector = GitHubApiConnector(github_api)
+        self.twitter_connector = TwitterApiConnector(twitter_api)
+        self.github_connector = GitHubApiConnector(github_api)
 
     def developers_connected(self, developer1: SocialDeveloper, developer2: SocialDeveloper) -> bool:
         social_connections: List[bool] = []
@@ -59,13 +59,13 @@ class DevSocialNet:
         github_devs: List[GitHubDeveloper] = []
         for twitter_handle in (handle1, handle2):
             try:
-                twitter_devs.append(self._twitter_connector.get_user(twitter_handle))
+                twitter_devs.append(self.twitter_connector.get_user(twitter_handle))
             except InvalidHandleError as handle_error:
                 errors.append(str(handle_error))
 
         for github_handle in (handle1, handle2):
             try:
-                github_devs.append(self._github_connector.get_user(github_handle))
+                github_devs.append(self.github_connector.get_user(github_handle))
             except InvalidHandleError as handle_error:
                 errors.append(str(handle_error))
 

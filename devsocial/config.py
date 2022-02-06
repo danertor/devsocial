@@ -5,7 +5,7 @@ from devsocial.twitter.controllers import TwitterConnectedController
 from devsocial.github.controllers import GitHubConnectedController
 
 
-def get_os_var(var_name: str, default: str = None, mandatory: bool = True) -> None:
+def get_os_var(var_name: str, default: str = None, mandatory: bool = True) -> str:
     value = os.environ.get(var_name)
     if not value and mandatory:
         raise ValueError(f"The environment variable {var_name} is not set.")

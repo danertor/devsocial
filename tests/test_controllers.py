@@ -1,21 +1,20 @@
 # pylint: disable=missing-module-docstring, disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=unused-variable, unused-argument, too-few-public-methods
-from collections import defaultdict
 from unittest.mock import Mock
 from typing import List
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import pytest
 
-from devsocial.models.base_developer import HandleType
 from devsocial.models.social_developer import SocialDeveloper
-from devsocial.models.social_network import \
-    DeveloperConnectionStatusOk, \
-    DeveloperConnectionStatus, \
-    DeveloperConnectionStatusFalse, \
-    DeveloperHistoryConnectionStatusFalse, \
-    DeveloperHistoryConnectionStatusOk, \
+from devsocial.models.social_network import (
+    DeveloperConnectionStatusOk,
+    DeveloperConnectionStatus,
+    DeveloperConnectionStatusFalse,
+    DeveloperHistoryConnectionStatusFalse,
+    DeveloperHistoryConnectionStatusOk,
     DeveloperConnectionStatusSameHandleError
+)
 from devsocial.controllers.dbhistory import DBHistoryController
 from devsocial.controllers.social_network import DevSocialNet
 from devsocial.github.models import GitHubDeveloper, GitHubOrganisation
@@ -107,12 +106,12 @@ class TestTwoHandlesAreConnected:
         monkeypatch.setattr(twitter_api, "get_follower_ids", self.mock_twitter_get_follower_ids, raising=False)
         return twitter_api
 
-    def mock_twitter_get_user(self, screen_name: str, *args, **kwargs) -> Mock:
+    def mock_twitter_get_user(self, screen_name: str, *ignored_arg, **ignored_kwargs) -> Mock:
         mock_follower_response = Mock()
         mock_follower_response.id_str = next(self.twitter_dev_ids)
         return mock_follower_response
 
-    def mock_twitter_get_follower_ids(self, screen_name: str, *args, **kwargs) -> TwitterDeveloperIdType:
+    def mock_twitter_get_follower_ids(self, screen_name: str, *ignored_arg, **ignored_kwargs) -> TwitterDeveloperIdType:
         return [next(self.twitter_followers_ids), ]
 
     @pytest.fixture
@@ -157,27 +156,6 @@ class TestDBHistoryController:
                                                        organisations=organisations)
     dev_history_conn_status_first = DeveloperHistoryConnectionStatusFalse(registered_at)
     dev_history_conn_status_last = DeveloperHistoryConnectionStatusOk(registered_at, organisations=organisations)
-
-    @staticmethod
-    @pytest.fixture
-    def mock_db() -> Mock:
-        class MockDBSession:
-            def __init__(self):
-                self.history = defaultdict(list)
-
-            def add(self, dev_conn_status: DeveloperConnectionStatus) -> None:
-                self.history[f"{dev_conn_status.handle1}_{dev_conn_status.handle2}"].append(dev_conn_status)
-
-            def query(self, handle1: HandleType, handle2: HandleType) -> List[DeveloperConnectionStatus]:
-                return self.history[f"{handle1}_{handle2}"]
-
-            def commit(self):
-                pass
-        local_db = Mock()
-        session = MockDBSession()
-        local_db.session = session
-        return local_db
-
 
     @staticmethod
     @pytest.fixture

@@ -1,18 +1,16 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, disable=missing-module-docstring
-
 from typing import List
-
 from flask import Response, make_response, jsonify
 
-from devsocial.dbmodels import db
-from devsocial.controllers.dbhistory import DBHistoryController
 from devsocial.models.base_developer import HandleType
-from devsocial.controllers.social_network import DevSocialNet
-from devsocial.models.social_network import DeveloperConnectionStatus, DeveloperConnectionStatusOk, \
-    DeveloperConnectionStatusFalse, DeveloperConnectionStatusNotFound, DeveloperConnectionStatusSameHandleError
-
-social_net: DevSocialNet = DevSocialNet()
-db_history_controller = DBHistoryController(db)
+from devsocial.models.social_network import (
+    DeveloperConnectionStatus,
+    DeveloperConnectionStatusOk,
+    DeveloperConnectionStatusFalse,
+    DeveloperConnectionStatusNotFound,
+    DeveloperConnectionStatusSameHandleError
+)
+from . import social_net, db_history_controller
 
 
 def realtime(handle1: HandleType, handle2: HandleType) -> Response:
