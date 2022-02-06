@@ -1,0 +1,25 @@
+name: CodeCov
+on: [push, pull_request]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      TWITTER_API_CONSUMER_KEY: TWITTER_API_CONSUMER_KEY
+      TWITTER_API_CONSUMER_SECRET: TWITTER_API_CONSUMER_SECRET
+      TWITTER_API_ACCESS_TOKEN: TWITTER_API_ACCESS_TOKEN
+      TWITTER_API_ACCESS_TOKEN_SECRET: TWITTER_API_ACCESS_TOKEN_SECRET
+      GITHUB_API_TOKEN: GITHUB_API_TOKEN
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip install -r requirements_dev.txt
+      - name: Generate Report
+        run: |
+          coverage run -m pytest tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
