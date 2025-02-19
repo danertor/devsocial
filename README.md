@@ -53,7 +53,7 @@ Swagger page: http://localhost:8080
 
 
 ## Realtime endpoint
-GET /connected/realtime/:dev1/:dev2
+GET /connected/realtime/<dev1>/<dev2>
 
 ```
 curl -X 'GET' \
@@ -67,7 +67,7 @@ curl -X 'GET' \
 }
 ```
 
-### Response404 NOT FOUND:
+### Response 404 NOT FOUND:
 ```
 {
     "errors": [
